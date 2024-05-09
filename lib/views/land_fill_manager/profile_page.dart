@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ecosync/controllers/token_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -46,11 +48,15 @@ class LandFillManagerProfilePage extends StatelessWidget {
                 // if we got our data
               } else if (snapshot.hasData) {
                 // Extracting data from snapshot object
-                final data = snapshot.data as String;
-                return Center(
-                  child: Text(
-                    '$data',
-                    style: const TextStyle(fontSize: 18),
+                final jsonOb = jsonDecode(snapshot.data!.toString());
+                return ListTile(
+                  title: SelectableText('ID: ${jsonOb['id']}'),
+                  subtitle: SelectableText(
+                      'Username: ${jsonOb["username"]}\n'
+                          'Email: ${jsonOb["email"]}\n'
+                          'Name: ${jsonOb["name"]}\n'
+                          'Role: ${jsonOb["role"]}\n'
+                          'Managed site: ${jsonOb["managed_ste"]}'
                   ),
                 );
               }

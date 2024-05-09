@@ -26,10 +26,10 @@ class LandFillManagerDashboardPage extends StatelessWidget {
             ),
           ),
           InkWell(
-            // onTap: () => context.go("/dashboard/landmanager_fleet_optimization"),
+            onTap: () => context.go("/landfillmanager_dashboard/travel_logs"),
             child: const ListTile(
-              title: Text("Fleet Optimization"),
-              leading: Icon(Icons.stacked_line_chart_rounded),
+              title: Text("Travel Logs"),
+              leading: Icon(Icons.file_copy_sharp),
             ),
           ),
 

@@ -1,5 +1,6 @@
 import 'package:ecosync/theme/theme.dart';
 import 'package:ecosync/views/land_fill_manager/profile_page.dart';
+import 'package:ecosync/views/land_fill_manager/travel_logs.dart';
 import 'package:ecosync/views/sts_manager/sts_dashboard_page.dart';
 import 'package:ecosync/views/sts_manager/truck_entry.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ final GoRouter _router = GoRouter(routes: <RouteBase>[
       // Routes for STS Manager
       GoRoute(path: 'profile', builder: (ctx, state) => const LandFillManagerProfilePage()),
       GoRoute(path: 'truck_entry', builder: (ctx, state) => const LandFillManagerTruckEntryPage()),
-      // GoRoute(path: 'landmanager_fleet_optimization', builder: (ctx, state) => const STSFleetOptimizationPage()),
+      GoRoute(path: 'travel_logs', builder: (ctx, state) => const LandFillManagerTravelLogsPage()),
     ]),
 
   ]),

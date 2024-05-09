@@ -11,14 +11,14 @@ extension DateTimeExtension on DateTime {
   }
 }
 
-class STSTruckEntryPage extends StatefulWidget {
-  const STSTruckEntryPage({super.key});
+class LandFillManagerTravelLogsPage extends StatefulWidget {
+  const LandFillManagerTravelLogsPage({super.key});
 
   @override
-  State<STSTruckEntryPage> createState() => _STSTruckEntryPageState();
+  State<LandFillManagerTravelLogsPage> createState() => _LandFillManagerTravelLogsPageState();
 }
 
-class _STSTruckEntryPageState extends State<STSTruckEntryPage> {
+class _LandFillManagerTravelLogsPageState extends State<LandFillManagerTravelLogsPage> {
 
   Future<String> getData(BuildContext context) async {
     try {
@@ -26,7 +26,7 @@ class _STSTruckEntryPageState extends State<STSTruckEntryPage> {
       final tokenController = Get.put(TokenController());
       final token = tokenController.getCurrentToken();
       final response = await http.get(url, headers: {"Authorization":"Token $token"});
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         print(response.body.toString());
         return response.body.toString();
       }
@@ -41,7 +41,7 @@ class _STSTruckEntryPageState extends State<STSTruckEntryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Land Fill M'),
+        title: const Text('Land Fill Manager: Travel Logs'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -60,13 +60,21 @@ class _STSTruckEntryPageState extends State<STSTruckEntryPage> {
 
                 // if we got our data
               } else if (snapshot.hasData) {
-                // Extracting data from snapshot object
-                final data = snapshot.data as dynamic;
-                return Column(
-                  children: [
-                    Text("Username: ${data["username"]}"),
-                    // TODO: Add all the other data points you need
-                  ],
+                List<dynamic> jsonObs = jsonDecode(snapshot.data!) as List;
+                return ListView.builder(
+                  itemCount: jsonObs.length,
+                  itemBuilder: (context, index) {
+                    final vehicle = jsonObs[index];
+                    return ListTile(
+                      title: SelectableText('ID: ${vehicle['id']}'),
+                      subtitle: SelectableText(
+                          'Vehicle Type: ${vehicle["site"]}\n'
+                              'Registration Number: ${vehicle["arival_time"]}\n'
+                              'STS Site: ${vehicle["departure_time"]}\n'
+                              'waste_weight: ${vehicle["waste_weight"]}'
+                      ),
+                    );
+                  },
                 );
               }
             }
