@@ -1,27 +1,57 @@
+import 'dart:convert';
+
 import 'package:ecosync/controllers/token_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../constants/constants.dart';
 
-
 class STSFleetOptimizationPage extends StatelessWidget {
   const STSFleetOptimizationPage({super.key});
 
-  Future<String> getData(BuildContext context) async {
+  Future<void> getData(BuildContext context, String capacity) async {
     try {
-      var url = Uri.http(baseUrl, "/profile/");
+      var url = Uri.http(baseUrl, "/mswm/sites/managers/optimized-fleet/",
+          {'capacity': capacity});
       final tokenController = Get.put(TokenController());
       final token = tokenController.getCurrentToken();
-      final response = await http.get(url, headers: {"Authorization":"Token $token"});
+      final response =
+          await http.get(url, headers: {"Authorization": "Token $token"});
       if (response.statusCode == 200) {
-        return (response.body);
+        List<dynamic> jsonObjs = jsonDecode(response.body) as List;
+        double containerHeight =
+            jsonObjs.length * 100.0 > 400 ? 400 : jsonObjs.length * 100;
+        return showDialog(
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Truck"),
+                content: SizedBox(
+                  height: containerHeight, // Change as per your requirement
+                  width: 300.0,
+                  child: ListView.builder(
+                    itemCount: jsonObjs.length,
+                    itemBuilder: (context, index) {
+                      final vehicle = jsonObjs[index];
+                      return ListTile(
+                        title: SelectableText('ID: ${vehicle['id']}'),
+                        subtitle: SelectableText(
+                            'Vehicle Type: ${vehicle["vehicle_type"]}\n'
+                            'Registration Number: ${vehicle["registration_number"]}\n'
+                            'STS Site: ${vehicle["sts_site"]}'),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+            context: context);
       }
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
-    return ('A network error occurred');
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('A network error occurred')));
   }
 
   @override
@@ -30,42 +60,16 @@ class STSFleetOptimizationPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('STS Fleet Optimization Page'),
       ),
-      body: SafeArea(
-        child: FutureBuilder(
-          builder: (ctx, snapshot) {
-            // Checking if future is resolved or not
-            if (snapshot.connectionState == ConnectionState.done) {
-              // If we got an error
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text(
-                    '${snapshot.error} occurred',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                );
-
-                // if we got our data
-              } else if (snapshot.hasData) {
-                // Extracting data from snapshot object
-                final data = snapshot.data as String;
-                return Center(
-                  child: Text(
-                    '$data',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                );
-              }
-            }
-
-            // Displaying LoadingSpinner to indicate waiting state
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-
-          // Future that needs to be resolved
-          // inorder to display something on the Canvas
-          future: getData(context),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          children: [
+            const Text("Waste Volume"),
+            TextField(
+              onSubmitted: (str) => getData(context, str),
+              keyboardType: TextInputType.number,
+            ),
+          ],
         ),
       ),
     );

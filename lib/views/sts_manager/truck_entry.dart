@@ -1,11 +1,15 @@
 import 'dart:convert';
-
-import 'package:ecosync/components/list_item.dart';
 import 'package:ecosync/controllers/token_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../constants/constants.dart';
+
+extension DateTimeExtension on DateTime {
+  DateTime applied(TimeOfDay time) {
+    return DateTime(year, month, day, time.hour, time.minute);
+  }
+}
 
 class STSTruckEntryPage extends StatefulWidget {
   const STSTruckEntryPage({super.key});
@@ -15,28 +19,29 @@ class STSTruckEntryPage extends StatefulWidget {
 }
 
 class _STSTruckEntryPageState extends State<STSTruckEntryPage> {
-  // final textEditingController = TextEditingController();
+  int? selectedTruck;
+  String wasteWeight = "";
+  TimeOfDay? startTime = TimeOfDay.now();
+  TimeOfDay? endTime = TimeOfDay.now();
 
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   textEditingController.dispose();
-  // }
-
-  String text = "";
-
-  Future<void> getData(BuildContext context, String capacity) async {
+  Future<void> sendData(BuildContext context) async {
     try {
-      var url = Uri.http(baseUrl, "mswm/sites/managers/optimized-fleet/", { 'capacity' : "$capacity" });
+      var url = Uri.http(baseUrl, "/mswm/travel-logs/");
       final tokenController = Get.put(TokenController());
       final token = tokenController.getCurrentToken();
-      final response = await http.get(url, headers: {"Authorization":"Token $token"});
-      if (response.statusCode == 200) {
+      final response = await http.post(url, headers: {"Authorization":"Token $token"}, body: {
+        "site": "0",
+        "vehicle": selectedTruck.toString(),
+        "arrival_time": DateTime.now().applied(startTime!).toIso8601String(),
+        "departure_time": DateTime.now().applied(endTime!).toIso8601String(),
+        "waste_weight": wasteWeight.toString()
+      });
+      if (response.statusCode == 201) {
+        print(response.body.toString());
         return showDialog(context: context, builder: (context) {
           return AlertDialog(
-            title: Text("Truck"),
-            content: VehicleList(vehiclesData: response.body),
-            // content: Text(response.body.toString()),
+            title: const Text("Upload"),
+            content: Text(response.body.toString()),
           );
         });
       }
@@ -44,8 +49,6 @@ class _STSTruckEntryPageState extends State<STSTruckEntryPage> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('A network error occurred')));
   }
 
   @override
@@ -58,16 +61,69 @@ class _STSTruckEntryPageState extends State<STSTruckEntryPage> {
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
-            // TextField(controller: textEditingController, keyboardType: TextInputType.number,),
-            TextField(onSubmitted: (str) => getData(context, str), keyboardType: TextInputType.number,),
+            Text("Selected Truck No"),
+          Wrap(
+          spacing: 8.0,
+          children: <Widget>[
+            ChoiceChip(
+              label: const Text('1'),
+              selected: selectedTruck == 1,
+              onSelected: (bool selected) {
+                setState(() {
+                  selectedTruck = 1;
+                });
+              },
+            ),
+            ChoiceChip(
+              label: const Text('2'),
+              selected: selectedTruck == 2,
+              onSelected: (bool selected) {
+                setState(() {
+                  selectedTruck = 2;
+                });
+              },
+            ),
+            ChoiceChip(
+              label: const Text('3'),
+              selected: selectedTruck == 3,
+              onSelected: (bool selected) {
+                setState(() {
+                  selectedTruck == 3;
+                });
+              },
+            ),
+          ],
+        ),
+            SizedBox(height: 16,),
+            Text("Weight of Waste"),
+            TextField(onChanged: (value) => wasteWeight = value.toString(), keyboardType: TextInputType.number,),
             const SizedBox(height: 16,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton.icon(onPressed: () async {
+                  startTime = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  setState(() {});
+                }, icon: const Icon(Icons.timelapse), label: Text("START: ${startTime!.hour} ${startTime!.minute}"),),
+                ElevatedButton.icon(onPressed: () async {
+                  endTime = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  setState(() {});
+                }, icon: const Icon(Icons.timelapse), label: Text("END: ${endTime!.hour} ${endTime!.minute}"),),
+              ],
+            ),
+            SizedBox(height: 16,),
 
-            // ElevatedButton(onPressed: () async {
-            //   if (textEditingController.text.isNotEmpty) {
-            //     final data = await getData(context, textEditingController.text);
-            //     print(data);
-            //   }
-            // }, child: const Text("Submit"))
+
+            ElevatedButton(onPressed: () async {
+
+                await sendData(context);
+            }, child: const Text("Submit"))
           ],
         ),
       ),

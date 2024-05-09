@@ -27,7 +27,7 @@ class LandFillManagerProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile Page'),
+        title: const Text('LandFill Manager Profile Page'),
       ),
       body: SafeArea(
         child: FutureBuilder(

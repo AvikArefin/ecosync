@@ -32,6 +32,8 @@ class _LoginPageState extends State<LoginPage> {
       try {
         var url = Uri.http(baseUrl, "/auth/login/");
         var response = await http.post(url, body: {
+
+          // TODO: Change this
           "username": _nameController.text,
           "password": _passwordController.text
         });
@@ -54,6 +56,66 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
+    }
+  }
+
+  void logInToSTS(BuildContext context) async {
+      try {
+        var url = Uri.http(baseUrl, "/auth/login/");
+        var response = await http.post(url, body: {
+
+          "username": "sts1manager",
+          "password": "managerPassword"
+        });
+        if (response.statusCode == 200) {
+          final token = jsonDecode(response.body)["key"];
+          tokenController.setCurrentToken(token);
+
+          final profileUrl = Uri.http(baseUrl, "/profile/");
+          final profile = await http.get(profileUrl, headers: {"Authorization":"Token $token"});
+          final int role = jsonDecode(profile.body)["role"];
+
+
+          print(token);
+          if (!context.mounted) return;
+          context.go('/sts_dashboard');
+        } else {
+          print('A network error occurred');
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+
+    }
+  }
+
+  void logInToLandManager(BuildContext context) async {
+    try {
+      var url = Uri.http(baseUrl, "/auth/login/");
+      var response = await http.post(url, body: {
+
+        "username": "landfill1manager",
+        "password": "managerPassword"
+      });
+      if (response.statusCode == 200) {
+        final token = jsonDecode(response.body)["key"];
+        tokenController.setCurrentToken(token);
+
+        final profileUrl = Uri.http(baseUrl, "/profile/");
+        final profile = await http.get(profileUrl, headers: {"Authorization":"Token $token"});
+        final int role = jsonDecode(profile.body)["role"];
+
+
+        print(token);
+        if (!context.mounted) return;
+        context.go('/landfillmanager_dashboard');
+      } else {
+        print('A network error occurred');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+
     }
   }
 
@@ -89,7 +151,9 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 10),
             const Spacer(flex: 1),
             ElevatedButton(
-              onPressed: () => logIn(context),
+              // onPressed: () => logIn(context),
+              // onPressed: () => logInToSTS(context),
+              onPressed: () => logInToLandManager(context),
               child: const Text('LOG IN'),
             ),
             const Spacer(flex: 1),
@@ -100,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
 
 class IconWidget extends StatelessWidget {
   const IconWidget({
-    super.key,
+    super.key
   });
 
   @override
