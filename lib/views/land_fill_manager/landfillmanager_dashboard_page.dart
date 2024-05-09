@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../controllers/token_controller.dart';
 
 class LandFillManagerDashboardPage extends StatelessWidget {
   const LandFillManagerDashboardPage({super.key});
@@ -7,7 +10,10 @@ class LandFillManagerDashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("LandManager Dashboard"),  backgroundColor: Colors.transparent),
+      appBar: AppBar(title: const Text("LandFillManager Dashboard"),  backgroundColor: Colors.transparent, actions: [IconButton(onPressed: () {
+        context.go("/");
+        Get.put(TokenController()).setCurrentToken("");
+      }, icon: const Icon(Icons.logout))],),
       body: ListView(
         reverse: true,
         children: [

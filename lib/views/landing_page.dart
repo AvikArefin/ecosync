@@ -7,7 +7,7 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Image.asset("assets/logo.png", height: 50), actions: [ElevatedButton(onPressed: () => context.go("/login"), child: const Text("Sign In")), const SizedBox(width: 20,)],),
+      appBar: AppBar(title: Image.asset("assets/logo.png", height: 50)),
       body: Stack(
         children: [
           Positioned(
@@ -27,6 +27,9 @@ class LandingPage extends StatelessWidget {
             ),
           ),
         ],
-      ));
+      ),
+      floatingActionButton: FloatingActionButton(onPressed: () => context.go('/login'), child: const Icon(Icons.navigate_next),),
+
+    );
   }
 }

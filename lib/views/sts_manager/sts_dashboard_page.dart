@@ -1,4 +1,6 @@
+import 'package:ecosync/controllers/token_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 class STSDashboardPage extends StatelessWidget {
@@ -7,7 +9,10 @@ class STSDashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("STS Manager Dashboard"),  backgroundColor: Colors.transparent),
+      appBar: AppBar(title: const Text("STS Manager Dashboard"),  backgroundColor: Colors.transparent, actions: [IconButton(onPressed: () {
+        context.go("/");
+        Get.put(TokenController()).setCurrentToken("");
+      }, icon: const Icon(Icons.logout))]),
       body: ListView(
         reverse: true,
         children: [

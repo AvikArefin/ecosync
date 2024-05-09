@@ -62,14 +62,13 @@ class STSFleetOptimizationPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          children: [
-            const Text("Waste Volume"),
-            TextField(
-              onSubmitted: (str) => getData(context, str),
-              keyboardType: TextInputType.number,
-            ),
-          ],
+        child: TextField(
+          onSubmitted: (str) => getData(context, str),
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            filled: true,
+            hintText: "Waste Volume",
+          ),
         ),
       ),
     );

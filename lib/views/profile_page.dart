@@ -4,12 +4,14 @@ import 'package:ecosync/controllers/token_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import '../../constants/constants.dart';
+import '../constants/constants.dart';
 
 
 
-class STSProfilePage extends StatelessWidget {
-  const STSProfilePage({super.key});
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key, required this.profilePageName});
+
+  final String profilePageName;
 
   Future<dynamic> getData(BuildContext context) async {
     try {
@@ -31,7 +33,7 @@ class STSProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('STS Profile Page'),
+        title: Text(profilePageName),
       ),
       body: SafeArea(
         child: Padding(
@@ -55,8 +57,13 @@ class STSProfilePage extends StatelessWidget {
                   final data = snapshot.data as dynamic;
                   return Column(
                     children: [
-                      Text("Username: ${data["username"]}"),
-                      // TODO: Add all the other data points you need
+                      Text("id: ${data["id"]}\n"
+                          "Username: ${data["username"]}\n"
+                          "Name: ${data["name"]}\n"
+                          "Email: ${data["email"]}\n"
+                          "Role: ${data["role"]}\n"
+                          "Managed Site: ${data["managed_site"]}"
+                      ),
                     ],
                   );
                 }

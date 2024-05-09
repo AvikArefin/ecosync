@@ -60,6 +60,7 @@ class _LandFillManagerTravelLogsPageState extends State<LandFillManagerTravelLog
 
                 // if we got our data
               } else if (snapshot.hasData) {
+                if (snapshot.data == "") return const Text("Error");
                 List<dynamic> jsonObs = jsonDecode(snapshot.data!) as List;
                 return ListView.builder(
                   itemCount: jsonObs.length,

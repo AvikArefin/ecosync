@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:ecosync/controllers/token_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,35 +14,46 @@ class STSTruckEntryPage extends StatefulWidget {
   const STSTruckEntryPage({super.key});
 
   @override
-  State<STSTruckEntryPage> createState() => _STSTruckEntryPageState();
+  State<STSTruckEntryPage> createState() =>
+      _STSTruckEntryPageState();
 }
 
-class _STSTruckEntryPageState extends State<STSTruckEntryPage> {
+class _STSTruckEntryPageState
+    extends State<STSTruckEntryPage> {
   int? selectedTruck;
   String wasteWeight = "";
-  TimeOfDay? startTime = TimeOfDay.now();
-  TimeOfDay? endTime = TimeOfDay.now();
+  TimeOfDay? arrivalTime = TimeOfDay.now();
+  TimeOfDay? departureTime = TimeOfDay.now();
 
   Future<void> sendData(BuildContext context) async {
     try {
       var url = Uri.http(baseUrl, "/mswm/travel-logs/");
       final tokenController = Get.put(TokenController());
       final token = tokenController.getCurrentToken();
-      final response = await http.post(url, headers: {"Authorization":"Token $token"}, body: {
-        "site": "0",
+      final response = await http.post(url, headers: {
+        "Authorization": "Token $token"
+      }, body:
+
+      {
         "vehicle": selectedTruck.toString(),
-        "arrival_time": DateTime.now().applied(startTime!).toIso8601String(),
-        "departure_time": DateTime.now().applied(endTime!).toIso8601String(),
-        "waste_weight": wasteWeight.toString()
+        "waste_weight": wasteWeight.toString(),
+        "arrival_time":
+        "${DateTime.now().applied(arrivalTime!).toIso8601String().split(".")[0]}.709Z",
+        "departure_time":
+        "${DateTime.now().applied(departureTime!).toIso8601String().split(".")[0]}.709Z",
+        "site": "3"
       });
+      // print(response.body);
       if (response.statusCode == 201) {
-        print(response.body.toString());
-        return showDialog(context: context, builder: (context) {
-          return AlertDialog(
-            title: const Text("Upload"),
-            content: Text(response.body.toString()),
-          );
-        });
+        // print(response.body.toString());
+        return showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Upload"),
+                content: Text(response.body.toString()),
+              );
+            });
       }
     } catch (e) {
       ScaffoldMessenger.of(context)
@@ -55,75 +65,93 @@ class _STSTruckEntryPageState extends State<STSTruckEntryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('STS Truck Entry Page'),
+        title: const Text('LandFillManager: Truck Entry'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
-            Text("Selected Truck No"),
-          Wrap(
-          spacing: 8.0,
-          children: <Widget>[
-            ChoiceChip(
-              label: const Text('1'),
-              selected: selectedTruck == 1,
-              onSelected: (bool selected) {
-                setState(() {
-                  selectedTruck = 1;
-                });
-              },
+            const Text("Selected Truck No"),
+            Wrap(
+              spacing: 8.0,
+              children: <Widget>[
+                ChoiceChip(
+                  label: const Text('1'),
+                  selected: selectedTruck == 1,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      selectedTruck = 1;
+                    });
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('2'),
+                  selected: selectedTruck == 2,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      selectedTruck = 2;
+                    });
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('3'),
+                  selected: selectedTruck == 3,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      selectedTruck == 3;
+                    });
+                  },
+                ),
+              ],
             ),
-            ChoiceChip(
-              label: const Text('2'),
-              selected: selectedTruck == 2,
-              onSelected: (bool selected) {
-                setState(() {
-                  selectedTruck = 2;
-                });
-              },
+            const SizedBox(
+              height: 16,
             ),
-            ChoiceChip(
-              label: const Text('3'),
-              selected: selectedTruck == 3,
-              onSelected: (bool selected) {
-                setState(() {
-                  selectedTruck == 3;
-                });
-              },
+            TextField(
+              onChanged: (value) => wasteWeight = value.toString(),
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                filled: true,
+                hintText: "Weight of Waste",
+              ),
             ),
-          ],
-        ),
-            SizedBox(height: 16,),
-            Text("Weight of Waste"),
-            TextField(onChanged: (value) => wasteWeight = value.toString(), keyboardType: TextInputType.number,),
-            const SizedBox(height: 16,),
+            const SizedBox(
+              height: 16,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ElevatedButton.icon(onPressed: () async {
-                  startTime = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay.now(),
-                  );
-                  setState(() {});
-                }, icon: const Icon(Icons.timelapse), label: Text("START: ${startTime!.hour} ${startTime!.minute}"),),
-                ElevatedButton.icon(onPressed: () async {
-                  endTime = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay.now(),
-                  );
-                  setState(() {});
-                }, icon: const Icon(Icons.timelapse), label: Text("END: ${endTime!.hour} ${endTime!.minute}"),),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    arrivalTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.timelapse),
+                  label: Text("START: ${arrivalTime!.hour} ${arrivalTime!.minute}"),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    departureTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.timelapse),
+                  label: Text("END: ${departureTime!.hour} ${departureTime!.minute}"),
+                ),
               ],
             ),
-            SizedBox(height: 16,),
-
-
-            ElevatedButton(onPressed: () async {
-
-                await sendData(context);
-            }, child: const Text("Submit"))
+            const Spacer(),
+            ElevatedButton(
+                onPressed: () async {
+                  await sendData(context);
+                },
+                child: const Text("Submit")),
+            const SizedBox(height: 16),
           ],
         ),
       ),

@@ -1,5 +1,4 @@
 import 'package:ecosync/theme/theme.dart';
-import 'package:ecosync/views/land_fill_manager/profile_page.dart';
 import 'package:ecosync/views/land_fill_manager/travel_logs.dart';
 import 'package:ecosync/views/sts_manager/sts_dashboard_page.dart';
 import 'package:ecosync/views/sts_manager/truck_entry.dart';
@@ -11,20 +10,20 @@ import './views/landing_page.dart';
 import 'views/land_fill_manager/landfillmanager_dashboard_page.dart';
 import 'views/land_fill_manager/truck_entry.dart';
 import 'views/sts_manager/fleet_optimization.dart';
-import 'views/sts_manager/profile_page.dart';
+import 'views/profile_page.dart';
 
 final GoRouter _router = GoRouter(routes: <RouteBase>[
   GoRoute(path: '/', builder: (ctx, state) => const LandingPage(), routes: [
     GoRoute(path: 'login', builder: (ctx, state) => const LoginPage()),
     GoRoute(path: 'sts_dashboard', builder: (ctx, state) => const STSDashboardPage(), routes: [
       // Routes for STS Manager
-      GoRoute(path: 'profile', builder: (ctx, state) => const STSProfilePage()),
+      GoRoute(path: 'profile', builder: (ctx, state) => const ProfilePage(profilePageName: "STS",)),
       GoRoute(path: 'truck_entry', builder: (ctx, state) => const STSTruckEntryPage()),
       GoRoute(path: 'fleet_optimization', builder: (ctx, state) => const STSFleetOptimizationPage()),
     ]),
     GoRoute(path: 'landfillmanager_dashboard', builder: (ctx, state) => const LandFillManagerDashboardPage(), routes: [
       // Routes for STS Manager
-      GoRoute(path: 'profile', builder: (ctx, state) => const LandFillManagerProfilePage()),
+      GoRoute(path: 'profile', builder: (ctx, state) => const ProfilePage(profilePageName: "Land Manager Profile")),
       GoRoute(path: 'truck_entry', builder: (ctx, state) => const LandFillManagerTruckEntryPage()),
       GoRoute(path: 'travel_logs', builder: (ctx, state) => const LandFillManagerTravelLogsPage()),
     ]),
